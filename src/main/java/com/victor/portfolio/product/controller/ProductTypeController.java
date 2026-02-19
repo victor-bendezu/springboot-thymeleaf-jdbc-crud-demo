@@ -4,6 +4,7 @@ import com.victor.portfolio.common.ApiResponse;
 import com.victor.portfolio.product.dto.ProductClassificationDto;
 import com.victor.portfolio.product.dto.ProductTypeDto;
 import com.victor.portfolio.product.service.ProductTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -40,12 +41,7 @@ public class ProductTypeController {
 
     @PostMapping("/api/product-type")
     @ResponseBody
-    public ResponseEntity<ApiResponse<Object>> save(@RequestBody ProductTypeDto dto) {
-        if (dto.getIdClassification() == null) throw new RuntimeException("Classification is required.");
-        if (dto.getStatus() == null) throw new RuntimeException("Status is required.");
-        if (dto.getCode() == null || dto.getCode().trim().isEmpty()) throw new RuntimeException("Code is required.");
-        if (dto.getName() == null || dto.getName().trim().isEmpty()) throw new RuntimeException("Name is required.");
-
+    public ResponseEntity<ApiResponse<Object>> save(@Valid @RequestBody ProductTypeDto dto) {
         productTypeService.saveProductType(dto);
         return ResponseEntity.ok(ApiResponse.ok("Saved successfully.", null));
     }
