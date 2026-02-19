@@ -29,4 +29,13 @@ public class ApiResponse<T> {
                 .data(null)
                 .build();
     }
+
+    public static <T> ApiResponse<T> error(String message, T data) {
+        return ApiResponse.<T>builder()
+                .code(AppConstants.HTTP_ERROR)
+                .message(message)
+                .data(data)
+                .build();
+    }
+
 }

@@ -30,22 +30,28 @@
     });
 
     $("#tbProductTypes")
-      .off("click.pt", ".btn-edit")
-      .on("click.pt", ".btn-edit", function () {
-        const rowData = $(this).closest("tr").data("row");
-        openModalForEdit(rowData);
-      });
+        .off("click.pt", ".btn-edit")
+        .on("click.pt", ".btn-edit", function () {
+          const rowData = $(this).closest("tr").data("row");
+          openModalForEdit(rowData);
+        });
 
     $("#tbProductTypes")
-      .off("click.pt", ".btn-delete")
-      .on("click.pt", ".btn-delete", function () {
-        const rowData = $(this).closest("tr").data("row");
-        remove(rowData.idProductType, rowData.name);
-      });
+        .off("click.pt", ".btn-delete")
+        .on("click.pt", ".btn-delete", function () {
+          const rowData = $(this).closest("tr").data("row");
+          remove(rowData.idProductType, rowData.name);
+        });
+
+    // Limpia alertas del modal cuando se cierra
+    $("#productTypeModal").on("hidden.bs.modal", function () {
+      hideModalAlert();
+    });
   }
 
   function init() {
-    hideAlert();
+    hidePageAlert();
+    hideModalAlert();
     loadClassifications().then(() => loadTable());
   }
 
@@ -55,17 +61,17 @@
       type: "GET",
       success: function (response, textStatus, xhr) {
         if (xhr.status !== 200) {
-          showAlert("danger", "Failed to load classifications.");
+          showPageAlert("danger", "Failed to load classifications.");
           return;
         }
         if (!response || response.code !== 200) {
-          showAlert("danger", response?.message || "Failed to load classifications.");
+          showPageAlert("danger", response?.message || "Failed to load classifications.");
           return;
         }
         renderClassifications(response.data || []);
       },
       error: function () {
-        showAlert("danger", "Error calling classifications endpoint.");
+        showPageAlert("danger", "Error calling classifications endpoint.");
       }
     });
   }
@@ -80,23 +86,23 @@
   }
 
   function loadTable() {
-    hideAlert();
+    hidePageAlert();
     $.ajax({
       url: API.list,
       type: "GET",
       success: function (response, textStatus, xhr) {
         if (xhr.status !== 200) {
-          showAlert("danger", "Failed to load product types.");
+          showPageAlert("danger", "Failed to load product types.");
           return;
         }
         if (!response || response.code !== 200) {
-          showAlert("danger", response?.message || "Failed to load product types.");
+          showPageAlert("danger", response?.message || "Failed to load product types.");
           return;
         }
         renderTable(response.data || []);
       },
       error: function () {
-        showAlert("danger", "Error calling list endpoint.");
+        showPageAlert("danger", "Error calling list endpoint.");
       }
     });
   }
@@ -112,8 +118,8 @@
 
     list.forEach((x) => {
       const statusBadge = x.status === 1
-        ? `<span class="badge text-bg-success">Active</span>`
-        : `<span class="badge text-bg-secondary">Inactive</span>`;
+          ? `<span class="badge text-bg-success">Active</span>`
+          : `<span class="badge text-bg-secondary">Inactive</span>`;
 
       const $tr = $(`
         <tr>
@@ -141,7 +147,8 @@
     $("#name").val("");
     $("#idClassification").val("");
     $("#status").val("1");
-    hideAlert();
+
+    hideModalAlert();
     modal.show();
     setTimeout(() => $("#code").trigger("focus"), 200);
   }
@@ -153,13 +160,15 @@
     $("#name").val(row.name);
     $("#idClassification").val(String(row.idClassification));
     $("#status").val(String(row.status));
-    hideAlert();
+
+    hideModalAlert();
     modal.show();
     setTimeout(() => $("#name").trigger("focus"), 200);
   }
 
   function save() {
-    hideAlert();
+    hideModalAlert();
+    hidePageAlert();
 
     const payload = {
       idProductType: toIntOrNull($("#idProductType").val()),
@@ -169,9 +178,10 @@
       status: toIntOrNull($("#status").val())
     };
 
+    // Validación FRONT: si falla, NO habrá request (por eso no ves nada en Network)
     const validationMsg = validate(payload);
     if (validationMsg) {
-      showAlert("warning", validationMsg);
+      showModalAlert("warning", validationMsg);
       return;
     }
 
@@ -182,26 +192,27 @@
       data: JSON.stringify(payload),
       success: function (response, textStatus, xhr) {
         if (xhr.status !== 200) {
-          showAlert("danger", "Save failed.");
+          showModalAlert("danger", "Save failed.");
           return;
         }
         if (!response || response.code !== 200) {
-          showAlert("danger", response?.message || "Save failed.");
+          showModalAlert("danger", response?.message || "Save failed.");
           return;
         }
         modal.hide();
         loadTable();
-        showAlert("success", response.message || "Saved.");
+        showPageAlert("success", response.message || "Saved.");
       },
       error: function (xhr) {
-        const msg = tryExtractMessage(xhr) || "Error calling save endpoint.";
-        showAlert("danger", msg);
+        // Validación BACK: típicamente 400 + JSON con message y data (mapa de campos)
+        const msg = tryExtractBetterMessage(xhr) || "Error calling save endpoint.";
+        showModalAlert("danger", msg);
       }
     });
   }
 
   function remove(id, name) {
-    hideAlert();
+    hidePageAlert();
     if (!confirm(`Delete "${name}"?`)) return;
 
     $.ajax({
@@ -209,32 +220,35 @@
       type: "DELETE",
       success: function (response, textStatus, xhr) {
         if (xhr.status !== 200) {
-          showAlert("danger", "Delete failed.");
+          showPageAlert("danger", "Delete failed.");
           return;
         }
         if (!response || response.code !== 200) {
-          showAlert("danger", response?.message || "Delete failed.");
+          showPageAlert("danger", response?.message || "Delete failed.");
           return;
         }
         loadTable();
-        showAlert("success", response.message || "Deleted.");
+        showPageAlert("success", response.message || "Deleted.");
       },
       error: function (xhr) {
-        const msg = tryExtractMessage(xhr) || "Error calling delete endpoint.";
-        showAlert("danger", msg);
+        const msg = tryExtractBetterMessage(xhr) || "Error calling delete endpoint.";
+        showPageAlert("danger", msg);
       }
     });
   }
 
   function validate(p) {
     if (!p.code) return "Code is required.";
+    if (p.code.length > 10) return "Code must not exceed 10 characters.";
     if (!p.name) return "Name is required.";
     if (!p.idClassification) return "Classification is required.";
     if (p.status === null || p.status === undefined) return "Status is required.";
     return "";
   }
 
-  function showAlert(type, message) {
+  // ===== Alerts =====
+
+  function showPageAlert(type, message) {
     const $a = $("#alertBox");
     $a.removeClass("d-none alert-success alert-danger alert-warning alert-info");
     $a.addClass(`alert-${type}`);
@@ -242,12 +256,32 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function hideAlert() {
+  function hidePageAlert() {
     const $a = $("#alertBox");
     $a.addClass("d-none");
     $a.removeClass("alert-success alert-danger alert-warning alert-info");
     $a.text("");
   }
+
+  function showModalAlert(type, message) {
+    const $a = $("#modalAlert");
+    $a.removeClass("d-none alert-success alert-danger alert-warning alert-info");
+    $a.addClass(`alert-${type}`);
+    $a.text(message);
+
+    // Asegura que se vea dentro del modal
+    const modalBody = document.querySelector("#productTypeModal .modal-body");
+    if (modalBody) modalBody.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function hideModalAlert() {
+    const $a = $("#modalAlert");
+    $a.addClass("d-none");
+    $a.removeClass("alert-success alert-danger alert-warning alert-info");
+    $a.text("");
+  }
+
+  // ===== Helpers =====
 
   function toIntOrNull(v) {
     if (v === null || v === undefined) return null;
@@ -257,13 +291,27 @@
     return Number.isNaN(n) ? null : n;
   }
 
-  function tryExtractMessage(xhr) {
+  function tryExtractBetterMessage(xhr) {
     try {
-      if (xhr && xhr.responseText) {
-        const obj = JSON.parse(xhr.responseText);
-        return obj?.message || null;
+      if (!xhr || !xhr.responseText) return null;
+      const obj = JSON.parse(xhr.responseText);
+
+      // Caso simple: solo message
+      const baseMsg = obj?.message ? String(obj.message) : "";
+
+      // Caso común: data es un map con errores por campo
+      const data = obj?.data;
+      if (data && typeof data === "object") {
+        const parts = [];
+        Object.keys(data).forEach((k) => {
+          parts.push(`${k}: ${data[k]}`);
+        });
+        const details = parts.join(" | ");
+        if (baseMsg && details) return `${baseMsg} (${details})`;
+        if (details) return details;
       }
-      return null;
+
+      return baseMsg || null;
     } catch (e) {
       return null;
     }
@@ -271,10 +319,10 @@
 
   function escapeHtml(str) {
     return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
   }
 })();
