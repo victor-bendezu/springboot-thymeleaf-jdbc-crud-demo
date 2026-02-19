@@ -22,6 +22,19 @@ This repository is a **portfolio project** designed to showcase a stack I have h
 
 ---
 
+## Screenshots
+
+### Main screen (List)
+![Main screen](docs/images/ui-main.png)
+
+### Create/Edit modal
+![Modal](docs/images/ui-modal.png)
+
+### H2 console (local development)
+![H2 console](docs/images/h2-console.png)
+
+---
+
 ## Architecture Overview
 
 This project follows a layered MVC architecture commonly used in enterprise applications:
