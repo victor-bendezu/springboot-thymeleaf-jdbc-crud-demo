@@ -1,0 +1,34 @@
+# Spring Boot + Thymeleaf + JDBC CRUD Demo (Portfolio)
+
+This repository is a **portfolio project** designed to showcase a stack I have hands-on experience with:
+
+- Spring Boot (embedded Tomcat)
+- Thymeleaf (server-side rendering)
+- jQuery + AJAX
+- Layered MVC structure: controller / service / serviceimpl / dao / daoimpl
+- JdbcTemplate
+- Stored-procedure style patterns (flag-based result)
+- ApiResponse wrapper + GlobalExceptionHandler (controllers without try/catch)
+
+> This is a demo project. It does **not** contain any client code or proprietary business logic.
+
+---
+
+## Features
+
+- Product Type maintenance (list / create / edit / delete)
+- Preloaded dropdown: Product Classification
+- Single-page UI with modal form and AJAX calls
+
+---
+
+## Running locally
+
+### IntelliJ IDEA
+1. Open the project as a Maven project
+2. Run `PortfolioCrudDemoApplication`
+3. Open: `http://localhost:8080/product-type`
+
+### Command line
+```bash
+mvn spring-boot:run
