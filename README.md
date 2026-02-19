@@ -22,6 +22,18 @@ This repository is a **portfolio project** designed to showcase a stack I have h
 
 ---
 
+## Architecture Overview
+
+This project follows a layered MVC architecture commonly used in enterprise applications:
+
+- **Controller layer**: view mapping + REST endpoints
+- **Service layer**: business logic + stored-procedure style result validation
+- **DAO layer**: `JdbcTemplate` access with SP-style calls
+- **Global error handling**: centralized exceptions via `@RestControllerAdvice`
+- **Response wrapper**: consistent JSON responses using `ApiResponse<T>`
+
+---
+
 ## Running locally
 
 ### IntelliJ IDEA
