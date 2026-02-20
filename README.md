@@ -1,59 +1,125 @@
-# Spring Boot + Thymeleaf + JDBC CRUD Demo (Portfolio)
+# Spring Boot Thymeleaf JDBC CRUD Demo
 
-This repository is a **portfolio project** designed to showcase a stack I have hands-on experience with:
+[![CI](https://github.com/victor-bendezu/springboot-thymeleaf-jdbc-crud-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/victor-bendezu/springboot-thymeleaf-jdbc-crud-demo/actions/workflows/ci.yml)
 
-- Spring Boot (embedded Tomcat)
-- Thymeleaf (server-side rendering)
-- jQuery + AJAX
-- Layered MVC structure: controller / service / serviceimpl / dao / daoimpl
-- JdbcTemplate
-- Stored-procedure style patterns (flag-based result)
-- ApiResponse wrapper + GlobalExceptionHandler (controllers without try/catch)
-
-> This is a demo project. It does **not** contain any client code or proprietary business logic.
+A structured CRUD application built with Spring Boot, Thymeleaf and JdbcTemplate, following clean architecture practices and including validation handling, logging, controller testing and CI integration.
 
 ---
 
-## Features
+## 📸 Application Screenshots
 
-- Product Type maintenance (list / create / edit / delete)
-- Preloaded dropdown: Product Classification
-- Single-page UI with modal form and AJAX calls
+### Main Screen
 
----
+![Main Screen](docs/images/ui-main.png)
 
-## Screenshots
+### Modal Form
 
-### Main screen (List)
-![Main screen](docs/images/ui-main.png)
-
-### Create/Edit modal
 ![Modal](docs/images/ui-modal.png)
 
-### H2 console (local development)
-![H2 console](docs/images/h2-console.png)
+### H2 Console
+
+![H2 Console](docs/images/h2-console.png)
 
 ---
 
-## Architecture Overview
+## 🚀 Tech Stack
 
-This project follows a layered MVC architecture commonly used in enterprise applications:
-
-- **Controller layer**: view mapping + REST endpoints
-- **Service layer**: business logic + stored-procedure style result validation
-- **DAO layer**: `JdbcTemplate` access with SP-style calls
-- **Global error handling**: centralized exceptions via `@RestControllerAdvice`
-- **Response wrapper**: consistent JSON responses using `ApiResponse<T>`
+- Java 17
+- Spring Boot
+- Thymeleaf
+- JdbcTemplate (SP-style approach)
+- H2 Database (embedded)
+- Log4j2
+- JUnit 5
+- MockMvc
+- GitHub Actions (CI)
 
 ---
 
-## Running locally
+## 🏗 Architecture Overview
 
-### IntelliJ IDEA
-1. Open the project as a Maven project
-2. Run `PortfolioCrudDemoApplication`
-3. Open: `http://localhost:8080/product-type`
+This project follows a layered architecture:
 
-### Command line
-```bash
-mvn spring-boot:run
+Controller → Service → DAO → Database
+
+Additional cross-cutting concerns implemented:
+
+- Global exception handling
+- Structured logging
+- Request correlation via MDC filter
+- Validation error handling at controller level
+- API response standardization
+
+---
+
+## ✅ Implemented Features
+
+- Full CRUD for Product Type
+- Server-side validation with structured error handling
+- Standardized API responses
+- GlobalExceptionHandler for validation errors
+- Log4j2 structured logging configuration
+- RequestId MDC filter for request traceability
+- Controller layer unit tests with MockMvc
+- GitHub Actions CI pipeline
+
+---
+
+## 🧪 Testing
+
+Controller layer tests implemented using:
+
+- @WebMvcTest
+- MockMvc
+- Mockito
+
+Tests validate:
+
+- Validation error responses
+- Successful delete operation behavior
+
+To run tests:
+
+    mvn test
+
+---
+
+## 🔄 CI Integration
+
+GitHub Actions workflow automatically:
+
+- Builds the project
+- Runs tests
+- Validates successful compilation
+
+Workflow file located at:
+
+    .github/workflows/ci.yml
+
+---
+
+## ▶️ Running the Application
+
+    mvn spring-boot:run
+
+Then access:
+
+    http://localhost:8080/product-type
+
+H2 Console:
+
+    http://localhost:8080/h2-console
+
+---
+
+## 🎯 What This Project Demonstrates
+
+- Layered backend architecture
+- Validation handling best practices
+- Structured logging configuration
+- Global exception management
+- Controller-level unit testing
+- Basic CI pipeline integration
+- Clean Git workflow (feature branch → PR → merge)
+
+This repository is intended to demonstrate backend development practices using Spring Boot in a structured and production-minded approach.
