@@ -1,19 +1,21 @@
-# Maven
-/target/
-!.mvn/wrapper/maven-wrapper.jar
+# Maven / Gradle
+target/
+*.log
 
-# IntelliJ
+# IDEs
 .idea/
 *.iml
-
-# Logs
-logs/
-*.log
+.vscode/
+.classpath
+.project
+.settings/
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Spring Boot
-application.properties
-application.yml
+# Wrapper cache (optional)
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+logs/

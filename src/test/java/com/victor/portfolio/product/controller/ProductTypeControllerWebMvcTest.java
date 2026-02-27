@@ -29,7 +29,7 @@ class ProductTypeControllerWebMvcTest {
 
     @Test
     void save_shouldReturn400_whenCodeExceedsMaxLength() throws Exception {
-        // NO debe llegar al service si la validación corta antes
+        // Arrange: mock the service layer so the controller test is isolated.
         Mockito.doNothing().when(productTypeService).saveProductType(any());
 
         String invalidPayload = """
@@ -62,4 +62,6 @@ class ProductTypeControllerWebMvcTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").exists());
     }
+
+
 }

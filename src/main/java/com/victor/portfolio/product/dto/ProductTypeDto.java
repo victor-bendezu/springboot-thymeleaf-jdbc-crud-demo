@@ -27,7 +27,7 @@ public class ProductTypeDto {
     @NotNull(message = "Classification is required.")
     private Integer idClassification;
 
-    // En tu RowMapper aparece classificationName, así que debe existir en el DTO
+    // In a real system, you may want to align these validations with your DB constraints and business rules.
     private String classificationName;
 
     @NotNull(message = "Status is required.")
