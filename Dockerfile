@@ -7,6 +7,9 @@ COPY .mvn .mvn
 COPY mvnw mvnw
 COPY mvnw.cmd mvnw.cmd
 
+RUN chmod +x mvnw
+RUN sed -i 's/\r$//' mvnw
+
 RUN ./mvnw -q -DskipTests dependency:go-offline
 
 COPY src src
