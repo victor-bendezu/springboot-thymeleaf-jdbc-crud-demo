@@ -15,7 +15,6 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Render sets PORT env var; default to 8080 for local
-ENV PORT=8080
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

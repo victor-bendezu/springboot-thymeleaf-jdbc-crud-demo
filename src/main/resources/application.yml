@@ -1,0 +1,12 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: springboot-thymeleaf-jdbc-crud-demo
+  profiles:
+    default: dev
+
+# Keep app-specific keys under a single namespace (similar to the api-rest project)
+app:
+  request-id-header: ${APP_REQUEST_ID_HEADER:X-Request-Id}
