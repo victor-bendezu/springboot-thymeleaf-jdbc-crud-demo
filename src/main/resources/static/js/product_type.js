@@ -43,7 +43,7 @@
           remove(rowData.idProductType, rowData.name);
         });
 
-    // Limpia alertas del modal cuando se cierra
+    // Clears modal alerts when it is closed
     $("#productTypeModal").on("hidden.bs.modal", function () {
       hideModalAlert();
     });
@@ -178,7 +178,7 @@
       status: toIntOrNull($("#status").val())
     };
 
-    // Validación FRONT: si falla, NO habrá request (por eso no ves nada en Network)
+    // Front-end validation: if it fails, no request will be sent (so nothing appears in the Network tab)
     const validationMsg = validate(payload);
     if (validationMsg) {
       showModalAlert("warning", validationMsg);
@@ -204,7 +204,7 @@
         showPageAlert("success", response.message || "Saved.");
       },
       error: function (xhr) {
-        // Validación BACK: típicamente 400 + JSON con message y data (mapa de campos)
+        // Back-end validation: typically returns 400 + JSON with message and data (field error map)
         const msg = tryExtractBetterMessage(xhr) || "Error calling save endpoint.";
         showModalAlert("danger", msg);
       }
@@ -296,10 +296,10 @@
       if (!xhr || !xhr.responseText) return null;
       const obj = JSON.parse(xhr.responseText);
 
-      // Caso simple: solo message
+      // Simple case: message only
       const baseMsg = obj?.message ? String(obj.message) : "";
 
-      // Caso común: data es un map con errores por campo
+      // Common case: data is a map of field-specific errors
       const data = obj?.data;
       if (data && typeof data === "object") {
         const parts = [];

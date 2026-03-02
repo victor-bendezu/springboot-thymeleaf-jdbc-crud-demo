@@ -17,10 +17,10 @@ industry-aligned best practices suitable for a portfolio demo.
 
 ## 🎯 Purpose
 
-This project is part of my portfolio to demonstrate practical Spring
-Boot development skills using the MVC pattern, structured layering,
-validation fundamentals, automated testing, CI/CD integration, and clean
-architecture principles applied to a server-rendered web application.
+This project is part of my portfolio to demonstrate practical Spring Boot development skills,
+structured layering (Controller → Service → DAO), validation fundamentals, automated testing, 
+CI/CD integration, and clean architecture principles applied to a web MVC application
+(Thymeleaf + jQuery AJAX).
 
 ------------------------------------------------------------------------
 
@@ -55,28 +55,47 @@ may take a few seconds to respond.
 
 Layered design:
 
-Controller → Service → DAO → Database
+View (Thymeleaf) → Controller → Service → DAO (JdbcTemplate) → H2 DB
 
 Key features:
 
--   DTO validation (`@Valid`)
--   Global exception handling (`@ControllerAdvice`)
--   Consistent JSON response wrapper for AJAX interactions
--   Structured logging with Log4j2
--   Request correlation via MDC filter
--   Clear separation of responsibilities
+-   MVC endpoint rendering (Thymeleaf template)
+-   AJAX endpoints returning a consistent JSON response wrapper
+-   Server-side validation (Bean Validation) + standardized error handling
+-   Global exception handling (unexpected errors)
+-   Structured logging with request correlation (MDC requestId)
 
 ![Diagram](docs/images/architecture-diagram.png)
 
 ------------------------------------------------------------------------
 
+## 🔐 Validation & Error Handling
+
+This demo focuses on validation and clean server-side error handling:
+
+-   Bean Validation on request DTOs
+-   Validation errors mapped to a standardized JSON response
+-   Global exception handler provides consistent error responses for unexpected failures
+
+------------------------------------------------------------------------
+
 ## 📦 Public Endpoints
 
--   GET `/product-type`
--   POST `/product-type`
--   PUT `/product-type/{id}`
--   DELETE `/product-type/{id}`
--   `/h2-console`
+**UI**
+
+-   GET `/product-type` (main screen)
+
+**AJAX / JSON**
+
+-   GET `/api/product-type`
+-   GET `/api/classifications`
+-   POST `/api/product-type`
+-   PUT `/api/product-type/{id}`
+-   DELETE `/api/product-type/{id}`
+
+**Dev-only (local)**
+
+-   H2 Console: `/h2-console`
 
 Note: The demo uses an in-memory H2 database. Data resets when the
 application restarts.
@@ -106,21 +125,26 @@ http://localhost:8080/product-type
 
 ## ⚡ Quick Start (Docker)
 
-`docker build -t thymeleaf-crud-demo .`
+`docker compose up --build`
 
-`docker run -p 8080:8080 thymeleaf-crud-demo`
+Stop:
+
+`docker compose down`
 
 ------------------------------------------------------------------------
 
 ## 🧪 Testing
 
-Controller tests are included using Spring Boot Test and MockMvc.
+Unit and integration tests are included using Spring Boot Test and MockMvc.
 
 Validated areas:
 
--   Validation error responses
--   Successful CRUD behavior
--   Standardized response structure
+- MVC view rendering (`ProductTypeViewControllerTest`)
+- REST controller behavior (`ProductTypeControllerWebMvcTest`)
+- DAO behavior with JdbcTemplate against H2 (`ProductTypeDaoJdbcTest`)
+- Service behavior (mocked DAO) (`ProductTypeServiceImplTest`)
+- End-to-end API integration (H2 + MVC) (`ProductTypeApiIntegrationTest`)
+- Global exception handling standardization (`ProductTypeGlobalExceptionHandlerTest`)
 
 Run tests:
 
@@ -167,56 +191,54 @@ In production, H2 would be replaced by a persistent database
 
 ## 🧠 Design Notes
 
--   Layered MVC architecture
--   Separation of concerns between view rendering and data access
--   Structured exception handling
--   Log correlation via MDC
--   Consistent response contracts for AJAX operations
--   Basic automated controller testing
--   Clean and maintainable package organization
+-   MVC UI rendered via Thymeleaf, with AJAX calls for CRUD operations
+-   Centralized exception handling via `GlobalExceptionHandler`
+-   Consistent JSON responses via `ApiResponse<T>`
+-   Log4j2 configuration with MDC requestId for traceability
+-   Clean separation of responsibilities across layers
 
 ------------------------------------------------------------------------
 
 ## 🧩 Project Structure
 
 ```text
-springboot-thymeleaf-jdbc-crud-demo
-├── src
-│   ├── main
-│   │   ├── java/com/victor/portfolio
-│   │   │   ├── common
-│   │   │   ├── db
-│   │   │   ├── product
-│   │   │   └── PortfolioCrudDemoApplication.java
-│   │   └── resources
-│   │       ├── static
-│   │       ├── templates
-│   │       ├── application.properties
-│   │       ├── schema.sql
-│   │       ├── data.sql
-│   │       └── log4j2-spring.xml
-│   └── test
-├── Dockerfile
-├── mvnw
-├── mvnw.cmd
-└── pom.xml
+src/main/java/com/victor/portfolio
+├── common
+│   └── web
+├── db
+├── product
+│   ├── controller
+│   ├── dao
+│   ├── domain
+│   ├── dto
+│   └── service
+└── PortfolioCrudDemoApplication.java
+
+src/main/resources
+├── static
+├── templates
+├── application.yml
+├── application-dev.yml
+└── application-prod.yml
 ```
 
 This structure keeps responsibilities separated by feature (`product`)
-and by layer (controller/service/dao), making the project easier to
+and by layer (`controller/service/dao`), making the project easier to
 navigate and maintain.
 
 ------------------------------------------------------------------------
 
 ## ⚙ Environment Configuration
 
-Configuration is handled through:
+The application supports profile-based configuration:
 
-application.properties
+-   application.yml
+-   application-dev.yml
+-   application-prod.yml
 
 The server port is configurable via:
 
-`server.port=\${PORT:8080}`
+`server.port=${PORT:8080}`
 
 This enables flexible local and cloud deployment configuration.
 
